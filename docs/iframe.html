@@ -4,7 +4,7 @@
 <head>
 	<title>Iframe page
     </title>
-	<meta charset="utf-8"  />
+    <meta charset="utf-8"  />
 </head>
 
 <body>
@@ -15,16 +15,12 @@
 <script>
     window.addEventListener("DOMContentLoaded", () => {
 
-        // Origin of this window
         const thisOrigin = window.location.origin;
 
-        // An identifier is assigned as query parameter to each iframe by parent
         const frameId = new URLSearchParams(window.location.search).get("id");
 
-        // A reference to all the iframes of the parent
         const frames = window.parent.frames;
 
-        // The type of message that will be sent
         let messageType = "PING";
 
         const messageButton = document.getElementById("message-button");
@@ -32,7 +28,7 @@
 
         window.addEventListener("message", (e) => {
             // Check origin of message is same as this window
-            if (event.origin !== thisOrigin) return;
+            if (e.origin !== thisOrigin) return;
 
             // Ignore any messages from self
             if(e.data?.sourceId === frameId) {
@@ -55,18 +51,16 @@
             }
         });
 
-        // Click to send a ping or pong message to other iframes
         messageButton.addEventListener("click", (e) => {
             e.preventDefault();
             for (let i = 0; i < frames.length; i++) {
                 frames[i].postMessage({
                     type: messageType,
                     sourceId: frameId
-                }, "https://dev.oscato.com");
+                }, thisOrigin);
                 messageDisplay.textContent = "";
             }
         });
-        
     });
 </script>
 </html>

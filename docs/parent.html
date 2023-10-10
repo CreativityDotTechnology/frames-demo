@@ -8,17 +8,44 @@
 </head>
 
 <body>
-
-    <h2>Iframe 1</h2>
-    <iframe id="iframe-1" src="https://dev.oscato.com/iframe?id=1"></iframe>
-
-    <h2>Iframe 2</h2>
-    <iframe id="iframe-2" src="https://dev.oscato.com/iframe?id=2"></iframe>
-
-    <h2>Iframe 3</h2>
-    <iframe id="iframe-3" src="https://dev.oscato.com/iframe?id=3"></iframe>
-
+    <iframe-container>
+        <iframe id="iframe-1" slot="iframe-1" src="https://dev.oscato.com/iframe?id=1"></iframe>
+        <iframe id="iframe-2" slot="iframe-2" src="https://dev.oscato.com/iframe?id=2"></iframe>
+        <iframe id="iframe-3" slot="iframe-3" src="https://dev.oscato.com/iframe?id=3"></iframe>
+    </iframe-container>
 </body>
 
+<script>
+    class IframeContainer extends HTMLElement {
 
+        constructor() {
+            // Always call super first in constructor
+            super();
+            this.attachShadow({ mode: "open" });
+        }
+
+        connectedCallback() {
+            const root = this.shadowRoot || this;
+            root.innerHTML = `
+            <div>
+                <div>
+                    <h2>Iframe 1</h2>
+                    <slot name="iframe-1"></slot>
+                </div>
+                <div>
+                    <h2>Iframe 2</h2>
+                    <slot name="iframe-2"></slot>
+                </div>
+                <div>
+                    <h2>Iframe 3</h2>
+                    <slot name="iframe-3"></slot>
+                </div>  
+            </div>
+            `
+        }
+
+    }
+
+    customElements.define("iframe-container", IframeContainer);
+</script>
 </html>
