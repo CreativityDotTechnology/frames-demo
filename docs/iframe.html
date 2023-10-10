@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Iframe page
+    </title>
+	<meta charset="utf-8"  />
+</head>
+
+<body>
+    <p id="message-display"></p>
+    <button id="message-button">Ping</button>
+</body>
+
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+
+        // Origin of this window
+        const thisOrigin = window.location.origin;
+
+        // An identifier is assigned as query parameter to each iframe by parent
+        const frameId = new URLSearchParams(window.location.search).get("id");
+
+        // A reference to all the iframes of the parent
+        const frames = window.parent.frames;
+
+        // The type of message that will be sent
+        let messageType = "PING";
+
+        const messageButton = document.getElementById("message-button");
+        const messageDisplay = document.getElementById("message-display");
+
+        window.addEventListener("message", (e) => {
+            // Check origin of message is same as this window
+            if (event.origin !== thisOrigin) return;
+
+            // Ignore any messages from self
+            if(e.data?.sourceId === frameId) {
+                return;
+            }
+            // Just some fancy flashing background when message received
+            document.body.style.backgroundColor = "#73ff98";
+            setTimeout(() => {document.body.style.backgroundColor = "white"}, 250)
+            
+            // Update UI based on message type
+            if(e.data?.type === "PING") {
+                messageType = "PONG";
+                messageButton.textContent = "Pong";
+                messageDisplay.textContent = "Ping received";
+            }
+            else {
+                messageType = "PING";
+                messageButton.textContent = "Ping";
+                messageDisplay.textContent = "Pong received";
+            }
+        });
+
+        // Click to send a ping or pong message to other iframes
+        messageButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            for (let i = 0; i < frames.length; i++) {
+                frames[i].postMessage({
+                    type: messageType,
+                    sourceId: frameId
+                }, "https://dev.oscato.com");
+                messageDisplay.textContent = "";
+            }
+        });
+        
+    });
+</script>
+</html>
